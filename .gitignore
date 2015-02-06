@@ -1,3 +1,6 @@
 node_modules
 json-schema-parser-util.iml
 .idea
+json-schema-java-mapper-utils.iml
+st/.DS_Store
+test/fixtures/schemas/.DS_Store
