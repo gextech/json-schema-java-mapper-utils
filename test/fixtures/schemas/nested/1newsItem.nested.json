@@ -1,0 +1,63 @@
+{
+  "slug": "ct:newsItem",
+
+  "name": "News Item",
+
+  "tenantsSlug": ["ALL_TENANTS"],
+
+  "description": "The content type to represent a newsItem",
+
+  "schema": {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "ct:newsItem.schema.json",
+    "title": "News Item Schema",
+    "description": "This is the schema for a simple NEWS-ITEM",
+    "definitions": {
+      "localizableField": {
+        "type": "object",
+        "patternProperties": {
+          "^(([a-z]+)_([A-Za-z]{2}))|(([a-z]{2})(-[A-Z]{2})?)$": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "type": "object",
+    "properties": {
+      "headline": {"$ref": "#/definitions/localizableField"},
+      "kicker": {"$ref": "#/definitions/localizableField"},
+      "leadParagraph": {"$ref": "#/definitions/localizableField"},
+      "body": {"$ref": "#/definitions/localizableField"}
+    },
+    "required": [
+      "headline",
+      "kicker",
+      "leadParagraph",
+      "body"
+    ]
+  },
+
+  "example": {
+    "headline": {
+      "es": "Lo que Volver al futuro predijo mal, de la a la Z",
+      "en_UK": "What Back to the Future Part II got right and wrong about 2015 – an A-Z"
+    },
+    "kicker": {
+      "es": "Los primeros 30 minutos de Rober Zemeckis de la película de 1989 toma lugar en un futuro distante - 2015. Catherine Shoard fan de la película hace un análisis de los aciertos y errores.",
+      "en_UK": "The first 30 minutes of Robert Zemeckis’s 1989 movie takes place in the distant future – 2015. Self-confessed Back to the Future fan Catherine Shoard takes a look at its accuracy"
+    },
+    "leadParagraph": {
+      "es": "Todavía quedan 291 días antes de llegar al día en el que Marty McFly (Michael J Fox) conoce un futuro lejano en 2015: 21 de Octubre...",
+      "en_UK": "There are still 291 days to go until Back to the Future day. On 21 October 2015 we will finally be at the point in time to which Marty McFly (Michael J Fox) travels in Back to the Future II, the 1989 sequel to the time-travelling classic."
+    },
+    "body": {
+      "html_en": "<table> <tr><td> The future he finds is one which has captured the imagination of millions – and one which has proved remarkably prescient. Save for a few key oversights (the internet, mobile phones) and a couple of over-hopeful punts in the dark (flying cars, hoverboards), the world dreamt up by writer Bob Gale and then brought to the screen by director Robert Zemeckis resembles our own in strange and uncanny ways. Here’s an A-Z guide to the gaps between that fictional world and our own, in the hope that inventors will spend the next 10 months wisely. </td></tr></table>"
+    }
+  },
+
+  "overviewDefinition":{
+    "quickHeadline" : "headline.es",
+    "quickKicker"   : "kicker.es"
+  }
+
+}
