@@ -34,18 +34,22 @@ util.mapProperty = (property, name, annotation, mapping, refMap) ->
 
   #if property has $ref resolve
   if property.items and property.items["$ref"]
-    keyRef = property.items["$ref"]
-    keyRefData = resolveTypeByRef(keyRef, refMap, name, true)
+    keyRefData = resolveTypeByRef(property.items["$ref"], refMap, name, true)
   else if property["$ref"]
-    keyRef = property["$ref"]
-    keyRefData = resolveTypeByRef(keyRef, refMap, name)
+    keyRefData = resolveTypeByRef(property["$ref"], refMap, name)
     propertyDef.property.type = keyRefData.type
-    if keyRefData.innnerSchema.type
-      property.type = keyRefData.innnerSchema.type
   else if property.patternProperties
     propertyDef.patternProperties = []
-    propertyDef.patternProperties  = handlePatternProperties(property, name, refMap, keyRefData, mapping, annotation)
+    propertyDef.patternProperties  = handlePatternProperties(property, name, refMap, mapping, annotation)
     return propertyDef
+
+  #If the schema has type it doesn't need a innerClass
+  if keyRefData and keyRefData.innnerSchema.type
+    property.type = keyRefData.innnerSchema.type
+  else if keyRefData and not keyRefData.innnerSchema.type and not property.items
+    property.type = resolveType(propertyDef.innerClass, name)
+    property.properties = keyRefData.innnerSchema
+    propertyDef.innerClass = mapInnerClass(keyRefData.type, property, refMap, mapping)
 
   propertyDef.property.name = name
   propertyDef.property.comment = property.description
@@ -56,7 +60,8 @@ util.mapProperty = (property, name, annotation, mapping, refMap) ->
 
   switch property.type
     when 'array'
-      propertyDef.property.type = handleArray( keyRefData, mapping)
+      itemsType = property.items.type if property.items
+      propertyDef.property.type = handleArray( keyRefData, itemsType, mapping)
     when 'object'
       objDef = handleObject(property, name, refMap, keyRefData, mapping )
       propertyDef.property.type = objDef.type
@@ -77,7 +82,7 @@ util.mapProperty = (property, name, annotation, mapping, refMap) ->
   propertyDef
 
 
-handlePatternProperties = (property, name, refMap, keyRefData, mapping, annotation) ->
+handlePatternProperties = (property, name, refMap, mapping, annotation) ->
   patternProperties = []
   for key of property.patternProperties
     patternProperty = {}
@@ -88,16 +93,20 @@ handlePatternProperties = (property, name, refMap, keyRefData, mapping, annotati
     patternProperties.push patternProperty
   patternProperties
 
-handleArray = (keyRefData, mapping) ->
+handleArray = (keyRefData, itemsType, mapping) ->
   auxType = "List"
+
   if keyRefData and keyRefData.innnerSchema.items isnt undefined
     primitiveType = mapping[keyRefData.innnerSchema.items.type]
-
     #if property doesn't has title we use primitive types
     if keyRefData.innnerSchema.items.title
       auxType += "<#{keyRefData.type}>"
     else if primitiveType
       auxType += "<#{primitiveType}>"
+  else
+    primitiveType = mapping[itemsType]
+    auxType += "<#{primitiveType}>" if primitiveType
+
 
   auxType
 
@@ -110,13 +119,13 @@ handleObject = (property, name, refMap, keyRefData, mapping ) ->
       objectDesc.type = keyRefData.type
     else
       objectDesc.type = resolveType(property, name)
-      innerClass = resolveInnerClass(objectDesc.type, property, refMap, mapping)
+      innerClass = mapInnerClass(objectDesc.type, property, refMap, mapping)
       objectDesc.innerClass = innerClass
 
   else if keyRefData and keyRefData.innnerSchema and keyRefData.innnerSchema.properties
     objectDesc.type = keyRefData.type
     property.properties = keyRefData.innnerSchema
-    objectDesc.innerClass = resolveInnerClass(keyRefData.type, property, refMap, mapping)
+    objectDesc.innerClass = mapInnerClass(keyRefData.type, property, refMap, mapping)
   else
     objectDesc.type = 'Map'
   objectDesc
@@ -141,6 +150,7 @@ resolveTypeByRef = (keyRef, refMap, propertyName, isArray = false) ->
 
   tipo
 
+
 resolveType = (schema, propertyName) ->
   type = ""
   if schema
@@ -151,7 +161,7 @@ resolveType = (schema, propertyName) ->
 
   type
 
-resolveInnerClass = (name, property, refMap, mapping) ->
+mapInnerClass = (name, property, refMap, mapping) ->
   innerClass = {}
   #if the property has #ref and title we don't need innerClass
   #because it should be already mapped

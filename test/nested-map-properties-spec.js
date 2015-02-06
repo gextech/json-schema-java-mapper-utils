@@ -48,6 +48,7 @@ describe('nested schema', function () {
         return it.property.name === "relatedContent"
       });
       expect(relatedContent).not.to.be.null;
+      expect(relatedContent).not.to.be.undefined;
       done();
     };
 

@@ -42,10 +42,10 @@ describe('mapProperties basic test', function () {
       var cat = _.find(data, function(parsed){
         return parsed.className === "Cat";
       });
-      var owner = _.find(cat.classMembers, function(members){
+      var errors = _.find(cat.classMembers, function(members){
         return members.name === 'errors'
       });
-      owner.type.should.be.equal("List<Error>");
+      errors.type.should.be.equal("List<Error>");
       done();
     };
     new Glob("**/*schema.json", globOptions, util.runTest(test, done));
@@ -69,5 +69,39 @@ describe('mapProperties basic test', function () {
     new Glob("**/*schema.json", globOptions, util.runTest(test, done));
 
   });
+
+
+  it("should map List of primitives", function(done){
+    var test = function(err, schemas, done){
+      var data = util.handleData(schemas);
+      var primitivesArray = _.find(data, function(parsed){
+        return parsed.className === "PrimitiveArray";
+      });
+
+      expect(_.find(primitivesArray.classMembers, function(it){
+        return it.name === "strings";
+      }).type).to.be.equal("List<String>");
+
+      expect(_.find(primitivesArray.classMembers, function(it){
+        return it.name === "booleans";
+      }).type).to.be.equal("List<Boolean>");
+
+      expect(_.find(primitivesArray.classMembers, function(it){
+        return it.name === "numbers";
+      }).type).to.be.equal("List<BigDecimal>");
+
+      expect(_.find(primitivesArray
+        .classMembers, function(it){
+        return it.name === "longs";
+      }).type).to.be.equal("List<Long>");
+      
+      done();
+    };
+    new Glob("**/*schema.json", globOptions, util.runTest(test, done));
+
+  });
+
+
+
 
 });
