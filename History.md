@@ -1,4 +1,9 @@
 
+0.0.3 / 2015-02-06
+==================
+
+  * solving issue with list of primitives and fixing trouble with inline ref classes
+
 0.0.2 / 2015-02-06
 ==================
 
