@@ -25,6 +25,7 @@ describe('inline ref ', function () {
        return it.className === 'Composite';
       });
       expect(compositeType.classType).to.be.equal("Composite");
+      expect(composite.classMembers.length).to.be.at.least(1);
       done();
     };
     new Glob("**/*schema.json", globOptions, util.runTest(test, done));

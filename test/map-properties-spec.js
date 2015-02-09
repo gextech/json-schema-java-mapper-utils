@@ -20,6 +20,36 @@ describe('mapProperties basic test', function () {
     }).not.to.throw()
   });
 
+  it("should map primitives", function(done){
+
+    var test = function(err, schemas, done){
+      var data = util.handleData(schemas);
+      var primitivesArray = _.find(data, function(parsed){
+        return parsed.className === "Cat";
+      });
+      expect(_.find(primitivesArray.classMembers, function(it){
+        return it.name === "name";
+      }).classType).to.be.equal("String");
+
+      expect(_.find(primitivesArray.classMembers, function(it){
+        return it.name === "toy";
+      }).classType).to.be.equal("Map");
+
+      expect(_.find(primitivesArray.classMembers, function(it){
+        return it.name === "weight";
+      }).classType).to.be.equal("BigDecimal");
+
+      expect(_.find(primitivesArray
+        .classMembers, function(it){
+        return it.name === "age";
+      }).classType).to.be.equal("Long");
+
+      done();
+    };
+    new Glob("**/*schema.json", globOptions, util.runTest(test, done));
+
+  });
+
   it("Cat should have a references to owner", function(done){
     var test = function(err, schemas, done){
       var data = util.handleData(schemas);
@@ -91,6 +121,37 @@ describe('mapProperties basic test', function () {
 
   });
 
+  it("Cat should have a abstract property sings and should be mapped to a Map", function(done){
+    var test = function(err, schemas, done) {
+      var data = util.handleData(schemas);
+      var cat = _.find(data, function (parsed) {
+        return parsed.className === "Cat";
+      });
+      var signs = _.find(cat.classMembers, function (it) {
+        return it.name === 'sings'
+      });
+      expect(signs.classType).to.be.equal('Map');
+      done();
+    };
+      new Glob("**/*schema.json", globOptions, util.runTest(test, done));
+
+  });
+
+  it("Cat should have a list of friends and should be a generic List", function(done){
+    var test = function(err, schemas, done) {
+      var data = util.handleData(schemas);
+      var cat = _.find(data, function (parsed) {
+        return parsed.className === "Cat";
+      });
+      var friends = _.find(cat.classMembers, function (it) {
+        return it.name === 'friends'
+      });
+      expect(friends.classType).to.be.equal('List');
+      done();
+    };
+    new Glob("**/*schema.json", globOptions, util.runTest(test, done));
+
+  });
 
   it("should map List of primitives", function(done){
     var test = function(err, schemas, done){
