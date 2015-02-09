@@ -119,10 +119,10 @@ handleObject = (property, name, refMap, keyRefData, mapping ) ->
     innerClass = mapInnerClass(objectDesc.classType, property, refMap, mapping)
     objectDesc.innerClass = innerClass
     #If the schema doesn't have title it need a innerClass
-  else if keyRefData and not keyRefData.innnerSchema.title
+  else if keyRefData and keyRefData.innnerSchema and not keyRefData.innnerSchema.title
     objectDesc.classType = resolveClassType(keyRefData.innnerSchema, name)
-    objectDesc.innerClass = mapInnerClass(objectDesc.classType, keyRefData.innnerSchema, refMap, mapping)
-  else if keyRefData
+    objectDesc.innerClass = mapInnerClass(objectDesc.classType,{title: objectDesc.classType, properties:keyRefData.innnerSchema}, refMap, mapping)
+  else if keyRefData and keyRefData.innnerSchema and  keyRefData.innnerSchema.properties
     objectDesc.classType = resolveClassType(keyRefData.innnerSchema, name)
   else
     objectDesc.classType = 'Map'
