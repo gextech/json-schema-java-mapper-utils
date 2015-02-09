@@ -1,6 +1,6 @@
 {
   "name": "json-schema-java-mapper-utils",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "This is used to convert json-schema to java/groovy files",
   "main": "lib/utils/map-properties.js",
   "scripts": {
