@@ -29,7 +29,7 @@ describe('mapProperties basic test', function () {
       var owner = _.find(cat.classMembers, function(members){
         return members.name === 'owner'
       });
-      owner.type.should.be.equal("Owner");
+      owner.classType.should.be.equal("Owner");
       done();
     };
     new Glob("**/*schema.json", globOptions, util.runTest(test, done));
@@ -45,14 +45,35 @@ describe('mapProperties basic test', function () {
       var errors = _.find(cat.classMembers, function(members){
         return members.name === 'errors'
       });
-      errors.type.should.be.equal("List<Error>");
+      errors.classType.should.be.equal("List<Error>");
       done();
     };
     new Glob("**/*schema.json", globOptions, util.runTest(test, done));
 
   });
 
-  it("Cat should have a innerClass Food and must have a property name", function(done){
+  it("Cat should have and owner and it shouldn't be part of a innerClass", function(done){
+    var test = function(err, schemas, done){
+      var data = util.handleData(schemas);
+      var cat = _.find(data, function(parsed){
+        return parsed.className === "Cat";
+      });
+
+      var owner = _.find(cat.classMembers, function(it){
+        return it.classType === 'Owner'
+      });
+      var ownerClass = _.find(cat.innerClasses, function(innerClass){
+        return innerClass.className === 'Owner'
+      });
+
+      expect(owner).to.be.an('object');
+      expect(ownerClass).to.be.an('undefined');
+      done();
+    };
+    new Glob("**/*schema.json", globOptions, util.runTest(test, done));
+  });
+
+  it("Cat should have a innerClass Food and must have a property names", function(done){
     var test = function(err, schemas, done){
       var data = util.handleData(schemas);
       var cat = _.find(data, function(parsed){
@@ -77,23 +98,22 @@ describe('mapProperties basic test', function () {
       var primitivesArray = _.find(data, function(parsed){
         return parsed.className === "PrimitiveArray";
       });
-
       expect(_.find(primitivesArray.classMembers, function(it){
         return it.name === "strings";
-      }).type).to.be.equal("List<String>");
+      }).classType).to.be.equal("List<String>");
 
       expect(_.find(primitivesArray.classMembers, function(it){
         return it.name === "booleans";
-      }).type).to.be.equal("List<Boolean>");
+      }).classType).to.be.equal("List<Boolean>");
 
       expect(_.find(primitivesArray.classMembers, function(it){
         return it.name === "numbers";
-      }).type).to.be.equal("List<BigDecimal>");
+      }).classType).to.be.equal("List<BigDecimal>");
 
       expect(_.find(primitivesArray
         .classMembers, function(it){
         return it.name === "longs";
-      }).type).to.be.equal("List<Long>");
+      }).classType).to.be.equal("List<Long>");
       
       done();
     };

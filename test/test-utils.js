@@ -22,8 +22,7 @@ var mapping = {
   'integer': "Long",
   'array': "List",
   'object': "Map",
-  'file': "InputStream",
-  undefined : "Map"
+  'file': "InputStream"
 };
 
 util.handleData = function (schemas) {

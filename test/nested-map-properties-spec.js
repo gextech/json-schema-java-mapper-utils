@@ -28,7 +28,7 @@ describe('nested schema', function () {
 
     var test = function (err, schemas, done) {
       var data = util.handleData(schemas);
-      data[0].innerClasses[0].innerClasses.length.should.equal(10);
+      data[0].innerClasses[0].innerClasses.length.should.equal(11);
       done();
     };
 

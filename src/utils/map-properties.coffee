@@ -32,24 +32,18 @@ util.mapProperty = (property, name, annotation, mapping, refMap) ->
   propertyDef = {}
   propertyDef.property = {}
 
-  #if property has $ref resolve
-  if property.items and property.items["$ref"]
-    keyRefData = resolveTypeByRef(property.items["$ref"], refMap, name, true)
-  else if property["$ref"]
-    keyRefData = resolveTypeByRef(property["$ref"], refMap, name)
-    propertyDef.property.type = keyRefData.type
-  else if property.patternProperties
+  if property.patternProperties
     propertyDef.patternProperties = []
     propertyDef.patternProperties  = handlePatternProperties(property, name, refMap, mapping, annotation)
     return propertyDef
 
-  #If the schema has type it doesn't need a innerClass
-  if keyRefData and keyRefData.innnerSchema.type
-    property.type = keyRefData.innnerSchema.type
-  else if keyRefData and not keyRefData.innnerSchema.type and not property.items
-    property.type = resolveType(propertyDef.innerClass, name)
-    property.properties = keyRefData.innnerSchema
-    propertyDef.innerClass = mapInnerClass(keyRefData.type, property, refMap, mapping)
+  #if property has $ref resolve
+  keyRefData = handleRef(property, refMap, name)
+
+  if keyRefData and keyRefData.innnerSchema.items
+    property.type = 'array'
+  else if keyRefData and  keyRefData.innnerSchema
+    property.type = if keyRefData.innnerSchema.type then  keyRefData.innnerSchema.type else "object"
 
   propertyDef.property.name = name
   propertyDef.property.comment = property.description
@@ -61,16 +55,16 @@ util.mapProperty = (property, name, annotation, mapping, refMap) ->
   switch property.type
     when 'array'
       itemsType = property.items.type if property.items
-      propertyDef.property.type = handleArray( keyRefData, itemsType, mapping)
+      propertyDef.property.classType = handleArray( keyRefData, itemsType, mapping, name)
     when 'object'
       objDef = handleObject(property, name, refMap, keyRefData, mapping )
-      propertyDef.property.type = objDef.type
+      propertyDef.property.classType = objDef.classType
       propertyDef.innerClass = objDef.innerClass
     else
       if name isnt "relatedContent"
-       propertyDef.property.type = mapping[property.type] ? property.type
+        propertyDef.property.classType = mapping[property.type] ? property.type
 
-  switch propertyDef.property.type
+  switch propertyDef.property.classType
     when "BigDecimal"
       propertyDef.property.decimalMax = property.maximum
       propertyDef.property.decimalMin = property.minimum
@@ -81,6 +75,11 @@ util.mapProperty = (property, name, annotation, mapping, refMap) ->
   propertyDef.property.kind = annotation + "(\"#{propertyDef.property.name}\")"
   propertyDef
 
+handleRef = (property, refMap, name)->
+  if property.items and property.items["$ref"]
+    return resolveTypeByRef(property.items["$ref"], refMap, name, true)
+  else if property["$ref"]
+    return resolveTypeByRef(property["$ref"], refMap, name)
 
 handlePatternProperties = (property, name, refMap, mapping, annotation) ->
   patternProperties = []
@@ -93,16 +92,18 @@ handlePatternProperties = (property, name, refMap, mapping, annotation) ->
     patternProperties.push patternProperty
   patternProperties
 
-handleArray = (keyRefData, itemsType, mapping) ->
+handleArray = (keyRefData, itemsType, mapping, name) ->
   auxType = "List"
 
   if keyRefData and keyRefData.innnerSchema.items isnt undefined
     primitiveType = mapping[keyRefData.innnerSchema.items.type]
     #if property doesn't has title we use primitive types
     if keyRefData.innnerSchema.items.title
-      auxType += "<#{keyRefData.type}>"
+      auxType += "<#{(resolveClassType(keyRefData.innnerSchema.items, name))}>"
+
     else if primitiveType
       auxType += "<#{primitiveType}>"
+
   else
     primitiveType = mapping[itemsType]
     auxType += "<#{primitiveType}>" if primitiveType
@@ -113,46 +114,40 @@ handleArray = (keyRefData, itemsType, mapping) ->
 handleObject = (property, name, refMap, keyRefData, mapping ) ->
   property = _.clone(property, true)
   objectDesc = {}
-  #if object has no references we made a inner class
   if property.properties
-    if keyRefData and keyRefData.type
-      objectDesc.type = keyRefData.type
-    else
-      objectDesc.type = resolveType(property, name)
-      innerClass = mapInnerClass(objectDesc.type, property, refMap, mapping)
-      objectDesc.innerClass = innerClass
-
-  else if keyRefData and keyRefData.innnerSchema and keyRefData.innnerSchema.properties
-    objectDesc.type = keyRefData.type
-    property.properties = keyRefData.innnerSchema
-    objectDesc.innerClass = mapInnerClass(keyRefData.type, property, refMap, mapping)
+    objectDesc.classType = resolveClassType(property, name)
+    innerClass = mapInnerClass(objectDesc.classType, property, refMap, mapping)
+    objectDesc.innerClass = innerClass
+    #If the schema doesn't have title it need a innerClass
+  else if keyRefData and not keyRefData.innnerSchema.title
+    objectDesc.classType = resolveClassType(keyRefData.innnerSchema, name)
+    objectDesc.innerClass = mapInnerClass(objectDesc.classType, keyRefData.innnerSchema, refMap, mapping)
+  else if keyRefData
+    objectDesc.classType = resolveClassType(keyRefData.innnerSchema, name)
   else
-    objectDesc.type = 'Map'
+    objectDesc.classType = 'Map'
   objectDesc
 
 
 resolveTypeByRef = (keyRef, refMap, propertyName, isArray = false) ->
-  tipo = {}
-  tipo.type = ""
+  ref = {}
   innerSchema = Deref.util.findByRef(keyRef, refMap)
   if innerSchema
     if isArray
-      tipo.innnerSchema = {}
-      tipo.innnerSchema.items = innerSchema
+      ref.innnerSchema = {}
+      ref.innnerSchema.items = innerSchema
     else
-      tipo.innnerSchema = innerSchema
-
-    tipo.type = resolveType(innerSchema, propertyName)
+      ref.innnerSchema = innerSchema
 
   else if keyRef
     console.error "$ref not found: #{keyRef} RefMap.keys -> [#{Object.keys(refMap)}]"
     console.error JSON.stringify(refMap)
 
-  tipo
+  ref
 
 
-resolveType = (schema, propertyName) ->
-  type = ""
+resolveClassType = (schema, propertyName) ->
+  classType = ""
   if schema
     if schema.title
       type = pascalCase(schema.title)
@@ -163,9 +158,8 @@ resolveType = (schema, propertyName) ->
 
 mapInnerClass = (name, property, refMap, mapping) ->
   innerClass = {}
-  #if the property has #ref and title we don't need innerClass
-  #because it should be already mapped
-  if property and not property.properties.title
+
+  if property
     innerClass.className = pascalCase(name)
     innerClass.classDescription = property.description
     aux = util.mapProperties(property, refMap, mapping)

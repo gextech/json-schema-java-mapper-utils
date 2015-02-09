@@ -16,10 +16,15 @@ describe('inline ref ', function () {
       var inline = _.find(data, function (parsed) {
         return parsed.className === "WidgetInlineProperty";
       });
+
+      var compositeType = _.find(inline.classMembers, function (it) {
+        return it.name === "composite"
+      });
+
       var composite = _.find(inline.innerClasses, function (it) {
        return it.className === 'Composite';
       });
-      expect(composite).not.to.be.undefined;
+      expect(compositeType.classType).to.be.equal("Composite");
       done();
     };
     new Glob("**/*schema.json", globOptions, util.runTest(test, done));
