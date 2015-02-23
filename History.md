@@ -1,4 +1,14 @@
 
+0.0.5 / 2015-02-09
+==================
+  * Fixing error with generic schemas
+
+
+0.0.4 / 2015-02-09
+==================
+
+  * more refactor and fixing trouble with classNames on innerClasses
+
 0.0.3 / 2015-02-06
 ==================
 

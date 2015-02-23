@@ -7,6 +7,7 @@ var should = chai.should();
 var expect = require('chai').expect;
 var path = require('path');
 var fs = require('fs');
+var fixtures = path.join(__dirname, '../node_modules/raml2code-fixtures/');
 
 var util = require("./test-utils");
 
@@ -18,7 +19,7 @@ describe('nested schema', function () {
       done();
     };
     expect(function () {
-      var innerSchema = path.join(__dirname, 'fixtures/schemas/nested/1newsItem.nested.json');
+      var innerSchema = fixtures + "/schemas/nested/genericContentType.nested.json";
       var cb = util.runTest(basicTest, done);
       cb(null, [innerSchema]);
     }).not.to.throw()
@@ -32,7 +33,7 @@ describe('nested schema', function () {
       done();
     };
 
-    var innerSchema = path.join(__dirname, 'fixtures/schemas/nested/genericContentType.nested.json');
+    var innerSchema = fixtures + "/schemas/nested/genericContentType.nested.json";
     var cb = util.runTest(test, done);
     cb(null, [innerSchema]);
 
@@ -52,7 +53,7 @@ describe('nested schema', function () {
       done();
     };
 
-    var innerSchema = path.join(__dirname, 'fixtures/schemas/nested/genericContentType.nested.json');
+    var innerSchema = fixtures + "/schemas/nested/genericContentType.nested.json";
     var cb = util.runTest(test, done);
     cb(null, [innerSchema]);
 
