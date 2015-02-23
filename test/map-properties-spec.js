@@ -7,6 +7,7 @@ var expect = require('chai').expect;
 
 var util = require("./test-utils");
 var globOptions = {};
+var testSchemas = "../../../../node_modules/ram2code-fixtures/schemas/**/*schema.json";
 
 describe('mapProperties basic test', function () {
   
@@ -16,17 +17,21 @@ describe('mapProperties basic test', function () {
       done();
     };
     expect(function() {
-      new Glob("**/*schema.json", globOptions, util.runTest(basicTest, done));
+      new Glob("testSchemas", globOptions, util.runTest(basicTest, done));
     }).not.to.throw()
   });
 
   it("should map primitives", function(done){
 
     var test = function(err, schemas, done){
+      console.log(err);
       var data = util.handleData(schemas);
+        console.log(data);
       var primitivesArray = _.find(data, function(parsed){
-        return parsed.className === "Cat";
+          console.log(parsed.className);
+        return parsed.className === "CatBasic";
       });
+        console.log(primitivesArray);
       expect(_.find(primitivesArray.classMembers, function(it){
         return it.name === "name";
       }).classType).to.be.equal("String");
@@ -46,7 +51,7 @@ describe('mapProperties basic test', function () {
 
       done();
     };
-    new Glob("**/*schema.json", globOptions, util.runTest(test, done));
+    new Glob(testSchemas, globOptions, util.runTest(test, done));
 
   });
 
@@ -54,7 +59,7 @@ describe('mapProperties basic test', function () {
     var test = function(err, schemas, done){
       var data = util.handleData(schemas);
       var cat = _.find(data, function(parsed){
-        return parsed.className === "Cat";
+        return parsed.className === "CatBasic";
       });
       var owner = _.find(cat.classMembers, function(members){
         return members.name === 'owner'
@@ -70,7 +75,7 @@ describe('mapProperties basic test', function () {
     var test = function(err, schemas, done){
       var data = util.handleData(schemas);
       var cat = _.find(data, function(parsed){
-        return parsed.className === "Cat";
+        return parsed.className === "CatBasic";
       });
       var errors = _.find(cat.classMembers, function(members){
         return members.name === 'errors'
