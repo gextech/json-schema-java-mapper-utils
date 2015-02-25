@@ -2,18 +2,6 @@ var util = {};
 var _ = require('lodash');
 var utilMapProperty = require('../lib/utils/map-properties');
 var fs = require('fs');
-util.runTest = function (fn, done) {
-  return function (err, files) {
-    try {
-      var schemas = _.map(files, function (file) {
-        return JSON.parse(fs.readFileSync(file).toString('utf8'));
-      });
-      fn(err, schemas, done);
-    } catch (e) {
-      done(e);
-    }
-  };
-};
 
 var mapping = {
   'string': "String",

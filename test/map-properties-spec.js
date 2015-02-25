@@ -13,7 +13,7 @@ describe('mapProperties basic test', function () {
       done();
     };
     expect(function () {
-      testRun(util.runTest(basicTest, done));
+      testRun(basicTest, done);
     }).not.to.throw()
   });
 
@@ -40,7 +40,7 @@ describe('mapProperties basic test', function () {
 
       done();
     };
-    testRun(util.runTest(test, done));
+    testRun(test, done);
 
   });
 
@@ -56,7 +56,7 @@ describe('mapProperties basic test', function () {
       owner.classType.should.be.equal("Owner");
       done();
     };
-    testRun(util.runTest(test, done));
+  testRun(test, done);
 
   });
 
@@ -79,7 +79,7 @@ describe('mapProperties basic test', function () {
       expect(ownerClass).to.be.an('undefined');
       done();
     };
-    testRun(util.runTest(test, done));
+  testRun(test, done);
   });
 
   it("Cat should have a innerClass Food and must have a property names", function (done) {
@@ -96,7 +96,7 @@ describe('mapProperties basic test', function () {
       innerClass.classMembers[0].name.should.equal("name");
       done();
     };
-    testRun(util.runTest(test, done));
+  testRun(test, done);
 
   });
 
@@ -112,7 +112,7 @@ describe('mapProperties basic test', function () {
       expect(signs.classType).to.be.equal('Map');
       done();
     };
-    testRun(util.runTest(test, done));
+  testRun(test, done);
 
   });
 
@@ -128,7 +128,7 @@ describe('mapProperties basic test', function () {
       expect(friends.classType).to.be.equal('List');
       done();
     };
-    testRun(util.runTest(test, done));
+  testRun(test, done);
 
   });
 
@@ -157,7 +157,7 @@ describe('mapProperties basic test', function () {
 
       done();
     };
-    testRun(util.runTest(test, done));
+  testRun(test, done);
   });
 
 

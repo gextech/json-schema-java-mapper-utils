@@ -28,7 +28,7 @@ describe('inline ref ', function () {
       expect(composite.classMembers.length).to.be.at.least(1);
       done();
     };
-    testRun(util.runTest(test, done));
+    testRun(test, done);
   });
 
 

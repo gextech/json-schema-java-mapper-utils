@@ -1,13 +1,10 @@
 'use strict';
+var testRun = require("raml2code-fixtures").loadSchemasAndRun;
 var utilMapProperty = require('../lib/utils/map-properties');
-var Glob = require("glob");
 var chai = require('chai');
 var _ = require('lodash');
 var should = chai.should();
 var expect = require('chai').expect;
-var path = require('path');
-var fs = require('fs');
-var fixtures = path.join(__dirname, '../node_modules/raml2code-fixtures/');
 
 var util = require("./test-utils");
 
@@ -19,9 +16,7 @@ describe('nested schema', function () {
       done();
     };
     expect(function () {
-      var innerSchema = fixtures + "/schemas/nested/genericContentType.nested.json";
-      var cb = util.runTest(basicTest, done);
-      cb(null, [innerSchema]);
+      testRun(basicTest, done, "nested/genericContentType.nested.json" );
     }).not.to.throw()
   });
 
@@ -33,10 +28,7 @@ describe('nested schema', function () {
       done();
     };
 
-    var innerSchema = fixtures + "/schemas/nested/genericContentType.nested.json";
-    var cb = util.runTest(test, done);
-    cb(null, [innerSchema]);
-
+    testRun(test, done, "nested/genericContentType.nested.json" );
   });
 
   it("nested level relatedContent should be a patternProperties  ", function (done) {
@@ -53,9 +45,7 @@ describe('nested schema', function () {
       done();
     };
 
-    var innerSchema = fixtures + "/schemas/nested/genericContentType.nested.json";
-    var cb = util.runTest(test, done);
-    cb(null, [innerSchema]);
+    testRun(test, done, "nested/genericContentType.nested.json" );
 
   });
 

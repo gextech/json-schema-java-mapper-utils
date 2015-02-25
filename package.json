@@ -1,6 +1,6 @@
 {
   "name": "json-schema-java-mapper-utils",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "This is used to convert json-schema to java/groovy files",
   "main": "lib/utils/map-properties.js",
   "scripts": {
@@ -36,6 +36,6 @@
     "gulp-mocha": "2.0.0",
     "mocha": "^2.0.1",
     "run-sequence": "^1.0.2",
-    "raml2code-fixtures": "0.0.5"
+    "raml2code-fixtures": "0.0.6"
   }
 }
