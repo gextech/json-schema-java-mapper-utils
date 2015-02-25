@@ -1,12 +1,12 @@
 'use strict';
-var Glob = require("glob");
+var testRun = require("raml2code-fixtures").loadSchemasAndRun;
 var chai = require('chai');
 var _ = require('lodash');
 var should = chai.should();
 var expect = require('chai').expect;
 
 var util = require("./test-utils");
-var globOptions = {};
+
 
 describe('inline ref ', function () {
 
@@ -28,7 +28,7 @@ describe('inline ref ', function () {
       expect(composite.classMembers.length).to.be.at.least(1);
       done();
     };
-    new Glob("**/*schema.json", globOptions, util.runTest(test, done));
+    testRun(util.runTest(test, done));
   });
 
 

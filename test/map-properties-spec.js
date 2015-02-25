@@ -1,14 +1,9 @@
 'use strict';
-var Glob = require("glob");
+var testRun = require("raml2code-fixtures").loadSchemasAndRun;
 var chai = require('chai');
 var _ = require('lodash');
 var expect = require('chai').expect;
-var path = require('path');
-
 var util = require("./test-utils");
-var globOptions = {};
-var fixtures = path.join(__dirname, '../node_modules/raml2code-fixtures/');
-var testSchemas = fixtures + "**/*schema.json";
 
 describe('mapProperties basic test', function () {
 
@@ -18,13 +13,14 @@ describe('mapProperties basic test', function () {
       done();
     };
     expect(function () {
-      new Glob("testSchemas", globOptions, util.runTest(basicTest, done));
+      testRun(util.runTest(basicTest, done));
     }).not.to.throw()
   });
 
   it("should map primitives", function (done) {
 
     var test = function (err, schemas, done) {
+      //console.log(schemas);
       var data = util.handleData(schemas);
       var catBasic = _.find(data, function (parsed) {
         return parsed.className === "CatBasic";
@@ -44,7 +40,7 @@ describe('mapProperties basic test', function () {
 
       done();
     };
-    new Glob(testSchemas, globOptions, util.runTest(test, done));
+    testRun(util.runTest(test, done));
 
   });
 
@@ -60,7 +56,7 @@ describe('mapProperties basic test', function () {
       owner.classType.should.be.equal("Owner");
       done();
     };
-    new Glob(testSchemas, globOptions, util.runTest(test, done));
+    testRun(util.runTest(test, done));
 
   });
 
@@ -83,7 +79,7 @@ describe('mapProperties basic test', function () {
       expect(ownerClass).to.be.an('undefined');
       done();
     };
-    new Glob(testSchemas, globOptions, util.runTest(test, done));
+    testRun(util.runTest(test, done));
   });
 
   it("Cat should have a innerClass Food and must have a property names", function (done) {
@@ -100,7 +96,7 @@ describe('mapProperties basic test', function () {
       innerClass.classMembers[0].name.should.equal("name");
       done();
     };
-    new Glob(testSchemas, globOptions, util.runTest(test, done));
+    testRun(util.runTest(test, done));
 
   });
 
@@ -116,7 +112,7 @@ describe('mapProperties basic test', function () {
       expect(signs.classType).to.be.equal('Map');
       done();
     };
-    new Glob(testSchemas, globOptions, util.runTest(test, done));
+    testRun(util.runTest(test, done));
 
   });
 
@@ -132,7 +128,7 @@ describe('mapProperties basic test', function () {
       expect(friends.classType).to.be.equal('List');
       done();
     };
-    new Glob(testSchemas, globOptions, util.runTest(test, done));
+    testRun(util.runTest(test, done));
 
   });
 
@@ -161,8 +157,7 @@ describe('mapProperties basic test', function () {
 
       done();
     };
-    new Glob(testSchemas, globOptions, util.runTest(test, done));
-
+    testRun(util.runTest(test, done));
   });
 
 
