@@ -49,6 +49,9 @@ util.mapProperty = (property, name, annotation, mapping, refMap) ->
   propertyDef.property.comment = property.description
   propertyDef.property.required = if property.required isnt undefined then property.required else false
   propertyDef.property.size = []
+
+  if property.default isnt undefined then data.property.default = property.default
+
   propertyDef.property.size.push {"name": "min", "value": property.minLength} if property.minLength
   propertyDef.property.size.push {"name": "max", "value": property.maxLength} if property.maxLength
 
