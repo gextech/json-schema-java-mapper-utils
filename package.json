@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:gextech/json-schema-parser-utils.git"
+    "url": "git@github.com:gextech/json-schema-java-mapper-utils.git"
   },
   "keywords": [
     "utils",
@@ -17,9 +17,9 @@
   "author": "Tomas S.",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/gextech/json-schema-parser-utils/issues"
+    "url": "https://github.com/gextech/json-schema-java-mapper-utils/issues"
   },
-  "homepage": "https://github.com/gextech/json-schema-parser-utils",
+  "homepage": "https://github.com/gextech/json-schema-java-mapper-utils",
   "dependencies": {
     "lodash": "2.4.1",
     "deref": "0.2.6",
@@ -28,7 +28,6 @@
   "devDependencies": {
     "gulp-util": "3.0.1",
     "chai": "^1.10.0",
-    "del": "^1.1.1",
     "glob": "^4.3.5",
     "gulp": "^3.8.10",
     "gulp-coffee": "2.2.0",
